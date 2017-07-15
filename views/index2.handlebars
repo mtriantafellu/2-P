@@ -35,17 +35,6 @@
             <div class="col-sm-2">
 
                 <li>
-                <h3>Name:</h3> {{this.playerName}}
-                <h3>Card state: {{this.type}}</h3>
-                <h3>{{this.text}}</h3>
-                <strong>Description:</strong>
-                {{this.desc}}
-                {{#if this.playable}}
-                {{> cards/play-card}}
-                {{/if}}
-                {{#unless this.playable}}
-                {{> cards/look-card}}
-                {{/unless}}
 
                 {{#if this.faceUp}}
                     (Face up logic works)
@@ -71,8 +60,21 @@
                 {{#if this.isNull}}
                 <h4>Jaqen H'ghar!</h4>  (No one)
                     <img src="/assets/images/jaqen.png">
+                {{/if}}
+
+                <h3>Name:</h3> {{this.playerName}}
+                <h3>Card state: {{this.type}}</h3>
+                <h3>{{this.text}}</h3>
+                    <strong>Description:</strong>
+                    {{this.desc}}
+                    {{#if this.playable}}
+                    {{> cards/play-card}}
                     {{/if}}
+                    {{#unless this.playable}}
+                    {{> cards/look-card}}
+                    {{/unless}}
                 </li>
+            </div>
         </ul>
         {{/each}}
 
