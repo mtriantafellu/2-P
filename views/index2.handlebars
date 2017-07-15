@@ -29,8 +29,9 @@
 <div class="row">
 
 
-
+<div>
         {{#each public}}
+        <img src=""
         <ul>
             <div class="col-sm-2">
 
@@ -38,31 +39,30 @@
 
                 {{#if this.faceUp}}
                     (Face up logic works)
-                    <img src="assets/images/cards/applefront.jpg" height="150" width="100"><span id="textarea2"></span>
+                    <span><img src="assets/images/cards/applefront.jpg" height="125" width="75"><span id="textarea2"></span>
                 {{/if}}
 
                 {{#if this.faceDown}}
                     (Face down logic works)
-                    <img src="assets/images/cards/card_back.jpg" height="150" width="100"><span id="textarea3"></span>
+                    <img src="assets/images/cards/card_back.jpg" height="125" width="75"><span id="textarea3"></span>
                 {{/if}}
 
                 {{#if this.judge}}
-                    <h4>This is the judge!</h4>
-                    <img src="assets/images/gavel.jpg" height="150" width="100"><span id="textarea4"></span>
+                    <h4>Judge: {{this.playerName}}</h4>
+                    <span><img src="assets/images/gavel.jpg" height="125" width="75"><span id="textarea4"></span>
 
                 {{/if}}
 
                 {{#if this.empty}}
-                    <h4>This player needs to hurry up!</h4>
-                    <img src="assets/images/cards/card_back.jpg" height="150" width="100"><span id="textarea3"></span>
+                    <h4>Player: {{this.playerName}}</h4>
+
                 {{/if}}
 
                 {{#if this.isNull}}
                 <h4>Jaqen H'ghar!</h4>  (No one)
-                    <img src="/assets/images/jaqen.png">
+                    <span><img src="/assets/images/jaqen.png" height="115" width="85"><span>
                 {{/if}}
 
-                <h3>Name:</h3> {{this.playerName}}
                 <h3>Card state: {{this.type}}</h3>
                 <h3>{{this.text}}</h3>
                     <strong>Description:</strong>
@@ -77,7 +77,7 @@
             </div>
         </ul>
         {{/each}}
-
+</div>
 </div>
 
                 <div class="panel-body">
@@ -95,7 +95,7 @@
 
         <div class="row">
 
-
+<div>
             {{#each mine}}
             <ul>
                 <div class="col-sm-2">
@@ -105,16 +105,17 @@
                             {{this.desc}}
                             {{#if this.playable}}
                                 {{> cards/play-card}}
-                                <img src="assets/images/cards/applefront.jpg" height="150" width="100"><span id="textarea7"></span>
-                        {{/if}}
+                                <img src="assets/images/cards/card_back.jpg" height="125" width="75"><span id="textarea8"></span>
+                            {{/if}}
                             {{#unless this.playable}}
                                 {{> cards/look-card}}
-                                <img src="assets/images/cards/card_back.jpg" height="150" width="100"><span id="textarea8"></span>
+
+                                <img src="assets/images/cards/applefront.jpg" height="125" width="75"><span id="textarea7"></span>
                             {{/unless}}
                         </li>
             </ul>
             {{/each}}
-
+</div>
         </div>
 
     <div class="panel-body">
@@ -130,51 +131,39 @@
             <div class="col-md-12">
                 <div class="panel panel-success panel-sidebar">
                     <div class="panel-heading" id="pHeadings">
-                        <h3 class="panel-title">Player Sidebar Area</h3>
+                        <h3 class="panel-title" id="cardArea">My Adjectives</h3>
                     </div>
 
-                    <div class="panel-body">
-                        Player 1, Player 2, Player 3
+                        <div class="panel-body">
+                            <span><img src="assets/images/cards/applefront.jpg" height="300" width="225"><span id="textarea2"></span>
+                        </div>
 
-                            <h2>Scores!</h2>
-                                {{#each scores}}
+                </div><!--class="panel panel-success"-->
+            </div><!--class="col-md-12"-->
+        </div><!--class="row"-->
+    </div><!--class="col-md-3"-->
+
+    <div class="col-md-3">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-success panel-sidebar">
+                    <div class="panel-heading" id="pHeadings">
+                        <h3 class="panel-title">Player Scores:</h3>
+                    </div>
+
+                        <div class="panel-body">
+
+                        <h2>Scores!</h2>
+                            {{#each scores}}
                                 <h4>{{this.player}}:</h4>  {{this.score}}
-                                {{/each}}
-                    </div>
+                            {{/each}}
+                        </div>
 
                 </div><!--class="panel panel-success"-->
             </div><!--class="col-md-12"-->
         </div><!--class="row"-->
     </div><!--class="col-md-3"-->
 </div><!--class="row"-->
-
-<div class="row">
-    <div class="col-md-6"> <!-- Nouns -->
-        <div class="panel panel-success panel-cards">
-            <div class="panel-heading" id="pHeadings">
-                <h3 class="panel-title" id="cardArea">My Nouns</h3>
-            </div>
-
-            <div class="panel-body">
-                Player Cards Content
-            </div>
-        </div><!--class="panel panel-success panel-cards"-->
-    </div><!--class="col-md-12"-->
-
-    <div class="col-md-6"> <!-- Adjectives -->
-        <div class="panel panel-success panel-cards">
-            <div class="panel-heading" id="pHeadings">
-                <h3 class="panel-title" id="cardArea">My Adjectives</h3>
-            </div>
-
-            <div class="panel-body">
-                Player Cards Content
-
-            </div>
-                    </div><!--class="panel panel-success panel-cards"-->
-                </div><!--class="col-md-12"-->
-            </div><!--class="row"-->
-        </div><!--class="col-md-8"-->
 
     </div><!--class="container"-->
 
