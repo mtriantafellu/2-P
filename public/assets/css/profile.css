@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css?family=Slackey');
+
+body {
+
+    background-color: rgba(255, 36, 43, 0.87);
+    font-family: 'Slackey', cursive;
+
+}
+
+.glyphicon.glyphicon-remove {
+
+    font-size: 25px;
+    margin-left: 2%;
+    margin-top: 2%;
+    color: white;
+
+}
+
+#profile {
+
+    margin-left: 42.5%;
+    color: white;
+    font-size: 40px;
+
+}
+
+#picturerow {
+
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.75%;
+
+}
+
+#wreath {
+
+    width: 20%;
+    height: 20%;
+    margin-left: 7.5%;
+    margin-top: -19.5%;
+
+}
+
+#trophy {
+
+    margin-top: 6.25%;
+
+}
+
+#games_played {
+
+    margin-top: 3%;
+
+}
+
+#info_text_row {
+
+    display: flex;
+    justify-content: space-between;
+    margin-left: 12%;
+
+}
+
+#trophyType {
+
+    color: white;
+
+}
+
+#user_name {
+
+    color: white;
+
+}
+
+#games {
+
+    color: white;
+
+}
+
+#numGamesPlayed {
+
+    color: rgba(124, 252, 0, 0.92);
+
+}
+
+#cards_flipped, #games_won {
+
+    color: white;
+    font-size: 30px;
+
+}
+
+#cardsFlipped, #gamesWon {
+
+    color: rgba(124, 252, 0, 0.92);
+    font-size: 30px;
+
+}
+
+#stats_row {
+
+    margin-left: 2%;
+
+}
