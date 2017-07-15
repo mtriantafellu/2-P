@@ -5,6 +5,7 @@
 var playerDB = [];
 var gameDB = [];
 
+var cardLog = {};
 
 /**
  * Randomize array element order in-place.
@@ -53,6 +54,7 @@ function Game(gameName) {
     this.turnNum = 0; // = turns.length
     this.judge = 0; // = turns.length%numPlayers
     this.adjDeck = shuffle(['happy','grumpy','sleepy','dopey','sneezy','doc','bashful']);
+    this.turnState = 'none'; // play, judge,  (recap - optional state)
 
     this.addPlayer = function (player) {
         if (this.players.indexOf(player) < 0 && this.players.length < 6) {
@@ -68,8 +70,24 @@ function Game(gameName) {
     }
 
     this.placeCard = function(player,card){
+            /////////  Put this card into play
         this.playArea[this.players.indexOf(player)]=card;
+            /////////////////////
+            // Replace this card with the last card in your hand, then pop the extra copy of the last card.
+        player.hand[player.hand.indexOf(card)] = player.hand[player.hand.length-1];
+        player.hand.pop();
+            /////////////////////
+        player.drawFrom(player.game.deck);
+
         player.canPlay = false;
+
+            // If no one needs to play a card...
+        if(this.players.every(function(item){return (item.canPlay===false); }) )
+        {
+                // ...advance to judge phase of game.
+            this.turnState = 'judge';
+        }
+
     };
 
     // ideally, a separate function would invite players, and they would choose whether to join.
@@ -127,7 +145,7 @@ function Game(gameName) {
 
     this.validate = function(player) {
 //        var playerGameIndex = -1;
-        console.log('Validating',player.name,player.game,player.password);
+//        console.log('Validating',player.name,player.game,player.password);
         if (this.players.some
             (function(item) {
                     if (item.name === player.name && item.password === player.password)
@@ -138,11 +156,14 @@ function Game(gameName) {
                     console.log('Valid player in the game '+this.name+'!');
                     return true;
             }
-            else {return false;}
+            else {
+                   console.log('Invalid player for the game',this.name); //,':',player);
+//                   console.log('Invalid player for the game',this.name,':',player);
+                   //console.log(this);
+                   return false;
+                   ;}
 
-        console.log('Invalid player for the game',this.name,':',player);
-        console.log(this);
-        return false;
+
     };
 
     this.shuffleDeck = function()
@@ -160,6 +181,7 @@ function Game(gameName) {
 
     this.newTurn = function() {
         this.turns.push(new Turn(this));
+        this.turnState = 'play';
 
         // Turn starts in "play phase".  Players choose to play noun, EXCEPT for judge.
         this.players.forEach(function(item){item.canPlay=true});
@@ -217,6 +239,7 @@ function Player(playerName,playerPassword) {
         var card = deck[deck.length - 1];
         deck.pop();
         this.hand.push(card);
+        logCard(card,this);
     }
 }
 
@@ -241,16 +264,16 @@ function DispCard(dispCard,dispType) {
     this.isNull=false;
     this.winner=false;
 
-    if(dispType=='judge'){this.judge=true;}
-    if(dispType=='faceUp'){this.faceUp=true;}
-    if(dispType=='faceDown'){this.faceDown=true;}
-    if(dispType=='empty'){this.empty=true;}
-    if(dispType=='null'){this.isNull=true;}
-    if(dispType=='winner'){this.winner=true;}
+    if(dispType==='judge'){this.judge=true;}
+    if(dispType==='faceUp'){this.faceUp=true;}
+    if(dispType==='faceDown'){this.faceDown=true;}
+    if(dispType==='empty'){this.empty=true;}
+    if(dispType==='null'){this.isNull=true;}
+    if(dispType==='winner'){this.winner=true;}
 
     console.log(dispCard);
 //    this.card = '';
-    if(this.type == 'faceUp' && this.card.text && this.card.desc) {
+    if(this.type === 'faceUp' && this.card.text && this.card.desc) {
         //this.card = dispCard;
         this.text = dispCard.text;
         this.desc = dispCard.desc;
@@ -262,85 +285,10 @@ function DispCard(dispCard,dispType) {
     }
 }
 
-
-
-
-
-// Sample games and players
-
-var game1 = new Game('game1');
-//var game1 = new Game(1,'game1');
-var game2 = new Game('game2');
-//var game2 = new Game(2,'game2');
-
-var mattB = new Player('Matt B','pass1');
-var mattT = new Player('Matt T','pass2');
-var kevin = new Player('Kevin','pass3');
-var connor = new Player('Connor','pass4');
-var reggie = new Player('Reggie','pass5');
-var evilKevin = new Player('Evil Kevin','traitor');
-
-
-playerDB = [mattB,mattT,kevin,connor,reggie,evilKevin];
-gameDB = [game1,game2];
-
-game1.addPlayer(mattT);
-game1.addPlayer(kevin);
-game1.addPlayer(mattB);
-game1.addPlayer(reggie);
-game2.addPlayer(connor);
-game2.addPlayer(evilKevin);
-game1.start();
-game2.start();
-console.log('Game 1 deck:',game1.deck);
-console.log('Game 2 deck:',game2.deck);
-
-console.log('Matt T');
-showPlayPhaseCards(game1,mattT);
-console.log('Kevin');
-showPlayPhaseCards(game1,kevin);
-
-
-
-console.log('Kevin plays ',kevin.hand[2],'...');
-
-game1.placeCard(kevin,kevin.hand[2]);
-kevin.drawFrom(game1.deck);
-
-console.log('Matt T');
-showPlayPhaseCards(game1,mattT);
-console.log('Kevin');
-showPlayPhaseCards(game1,kevin);
-console.log('Matt B');
-showPlayPhaseCards(game1,mattB);
-
-console.log('These cards are actually in play:',game1.playArea);
-
-game1.placeCard(mattB,mattB.hand[1]);
-mattB.drawFrom(game1.deck);
-
-console.log('These cards are actually in play:',game1.playArea);
-var mattBCardsInPlay = new showPlayPhaseCards(game1,mattB);
-
-console.log(mattBCardsInPlay.inPlay);
-
-// console.log('Let\'s look by string for (game1,mattB)...)');
-// console.log(getGamePlayer('game1','Matt B'));
-
-/*function isGame(gameStr,game) {
-    if(gameStr == game.name) {
-        console.log(gameStr,game.name,'true');
-        return true;}
-    else {
-        console.log(gameStr,game.name,'false');
-        return false;
-    }
+function logCard(card,player) {
+    cardLog[card.text] = {card:card, player:player, game:player.game};
 }
 
-function isPlayer(players,playerStr) {
-    if(players[i].name == playerStr) {return true;}
-    else return false;
-}*/
 
 function getGamePlayer(gameStr,playerStr) {
     var gameFound = '';
@@ -353,14 +301,19 @@ function getGamePlayer(gameStr,playerStr) {
            }
         });
 
-    gameFound.players.forEach(function(item) {
-        if (item.name == playerStr) {
-            playerFound = item;
-//            console.log('Found player', playerStr, '=', item)
-            }
-        });
+    if(gameFound != '')
+    {
+        gameFound.players.forEach(function(item) {
+            if (item.name == playerStr) {
+                playerFound = item;
+    //            console.log('Found player', playerStr, '=', item)
+                }
+            });
+    }
 
-    console.log({game:gameFound.name, player:playerFound.name});
+    if(playerFound != '')
+        {console.log('getGamePlayer',{game:gameFound.name, player:playerFound.name});}
+    else{ console.log('Failed to find',gameStr,playerStr);}
 
     this.game = gameFound;
     this.player = playerFound;
@@ -369,8 +322,10 @@ function getGamePlayer(gameStr,playerStr) {
 
 //  Adjective is visible.
 //  Players are choosing card to play.
+//  Cards in play are visible only to whomever played them.
+//  Cards in hand are playble if you haven't played yet.
 //  Judge is waiting.
-function showPlayPhaseCards(game,player,canPlay) {
+function showPlayPhaseCards(game,player) {
 //function showPlayPhaseCards(game,player) {
 
     this.players = game.players;
@@ -381,6 +336,12 @@ function showPlayPhaseCards(game,player,canPlay) {
 //    this.adjective = game.turns[Turn].adj;
 
     this.canPlay = player.canPlay;
+
+    this.scores = [];
+    for(var i=0; i<game.players.length;i++)
+    {
+        this.scores.push({score: this.players[i].score, player:this.players[i].name});
+    }
 
     if(this.canPlay){this.inHand.forEach(function(item){item.playable = true;});}
         else {this.inHand.forEach(function(item){item.playable = false;});}
@@ -423,8 +384,157 @@ function showPlayPhaseCards(game,player,canPlay) {
     return this;
 }
 
-function likeThisCard(game,player,card) {
 
+//  Adjective is visible.
+//  Cards in play are visible.
+//  Names are HIDDEN from cards in play.
+//  Judge is judging.
+//  Cards in hand are NOT playable.
+function showJudgePhaseCards(game,player) {
+
+/*    console.log('wtf mate');
+    console.log('wtf mate');
+    console.log('wtf mate');
+    console.log('wtf mate');
+    console.log('wtf mate');
+    console.log('wtf mate');
+    console.log('wtf mate');*/
+    this.players = game.players;
+    this.inPlay = [];
+    this.inHand = player.hand;
+    this.playerIndex = game.players.indexOf(player);
+    this.adj = game.turns[game.turnNum].adj;
+    this.judge = game.players[game.judge];
+    this.isJudge = (this.judge == player);
+//    this.adjective = game.turns[Turn].adj;
+
+    this.scores = [];
+    for(var i=0; i<this.players.length;i++)
+    {
+        this.scores.push({score: this.players[i].score, player:this.players[i].name});
+    }
+
+            // No one can play cards from hand.  Separate logic for cards in play.
+    this.canPlay = false; //player.canPlay;
+
+    if(this.canPlay){this.inHand.forEach(function(item){item.playable = true;});}
+        else {this.inHand.forEach(function(item){item.playable = false;});}
+
+/*    if(this.judge == player) {console.log('I think I am the judge this turn');}
+        else{ console.log('I am not the judge...');}*/
+    if(this.isJudge) {console.log('I think I am the judge this turn');}
+        else{ console.log('I am not the judge...');}
+
+    // cards in play
+    for(var i=0; i<6; i++)
+    {
+        var card = game.playArea[i];
+        if(!card) {card ='';}
+        if (game.judge === i)
+        {
+            this.inPlay.push(new DispCard('judge','judge'));
+            this.inPlay[this.inPlay.length-1].playerName = this.players[i].name;
+        }
+        else if (i === this.playerIndex && game.judge !== i && card !== '')
+        {
+            this.inPlay.push(new DispCard(card,'faceUp'));
+                    //  I can still see my own card!
+            this.inPlay[this.inPlay.length-1].playerName = this.players[i].name;
+        }
+            //////////////////
+            // Shouldn't be possible to get to judge phase in this case...
+        else if (game.judge !== i && card === '' && i<game.numPlayers)
+        {
+            this.inPlay.push(new DispCard('','empty'));
+            this.inPlay[this.inPlay.length-1].playerName = '????????'; //this.players[i].name;
+        }
+            //////////////////
+
+        else if(game.judge !==i && card !== '' && i<game.numPlayers)
+            // Need to see it to judge it...
+        {
+            this.inPlay.push(new DispCard(card,'faceUp'));
+            this.inPlay[this.inPlay.length-1].playerName = '????????'; //this.players[i].name;
+            // I need to be able to judge this!
+            if(this.isJudge){this.inPlay[this.inPlay.length-1].playable = true;}
+        }
+        else if (i>=game.numPlayers)
+        {
+            this.inPlay.push(new DispCard('','null'));
+            this.inPlay[this.inPlay.length-1].playerName = 'No one...';
+        }
+    }
+        //  We don't want to reveal who played what.
+    this.inPlay = shuffle(this.inPlay);
+
+    console.log('Adjective:',this.adj);
+//    console.log(player.name,'sees these cards in play:',this.inPlay);
+//    console.log(player.name,'has these cards in hand:',this.inHand);
+
+    return this;
+}
+
+//  Find a card in your hand
+//  ***FAILS BY DESIGN IF THE CARD IS NO LONGER IN YOUR HAND.***
+//
+function findPlayerCard(cardStr,playerStr,gameStr) {
+
+    var str = cardStr;
+    var thisGame = getGamePlayer(gameStr,playerStr).game;
+    var thisPlayer = getGamePlayer(gameStr,playerStr).player;
+
+    var playerIndex=-1;
+    for(var i=0;i<thisGame.players.length;i++)
+    {
+        if(thisPlayer === thisGame.players[i]) {playerIndex = i;}
+    }
+
+    var cardIndex=-1;
+    for(var i=0;i<thisPlayer.hand.length;i++)
+    {
+        if(str === thisPlayer.hand[i].text) {cardIndex = i;}
+    }
+
+
+//    var playerIndex = thisGame.players.indexOf(function(player){
+//            player.hand.indexOf(function(card){return (card.text === cardStr)});
+//    });
+//    var cardIndex = thisPlayer.hand.indexOf(function(card){return (card.text == cardStr);});
+//    var cardIndex = thisPlayer.hand.indexOf(function(card){return (card.text == cardStr);});
+
+    if(cardIndex!==-1 && playerIndex!==-1)
+    {
+        console.log('player number:',playerIndex,'player name:',thisPlayer.name);
+        console.log('card number:',cardIndex,'card name:',thisPlayer.hand[cardIndex].text);
+
+        return {player: thisPlayer, card:thisPlayer.hand[cardIndex]};
+    }
+    else {return '';}
+}
+
+function isJudge(cardStr,playerStr,gameStr) {
+    var find = findPlayerCard(cardStr,playerStr,gameStr);
+    if(find.player && find.card)
+        {
+            if(find.player.game.judge === find.player) {return true;}
+        }
+    else return false;
+}
+
+function likeThisCard(cardText) {
+    if(cardLog[cardText] != undefined)
+        {
+            var CLCT = cardLog[cardText];
+            var player = CLCT.player;
+            var game = CLCT.game;
+            var card = CLCT.card;
+
+            player.score++;
+            console.log('card',card);
+            console.log('player.score',player.score);
+            game.turns[game.turnNum].winner = player;
+            game.endTurn();
+        }
 }
 
 
@@ -436,9 +546,15 @@ var gameObj = {
     whenDone: whenDone,
     done: done,
     getGamePlayer: getGamePlayer,
-    showPlayPhaseCards: showPlayPhaseCards
+    showPlayPhaseCards: showPlayPhaseCards,
+    showJudgePhaseCards: showJudgePhaseCards,
+    likeThisCard: likeThisCard,
+    findPlayerCard: findPlayerCard,
+    isJudge: isJudge
 };
 
+
+        //  If this game server were supposed to scale to a large number of users, done and to do should be factored into the Game Object.
 var toDo = [];
 
 function whenDone(socket,call,game){
@@ -460,7 +576,77 @@ function done(param) {
             // }
         }
     );
+        // Don't need memory leak?
+    toDo = [];
 }
 
+
+// Sample games and players
+
+var game1 = new Game('game1');
+//var game1 = new Game(1,'game1');
+var game2 = new Game('game2');
+//var game2 = new Game(2,'game2');
+
+var mattB = new Player('Matt B','pass1');
+var mattT = new Player('Matt T','pass2');
+var kevin = new Player('Kevin','pass3');
+var connor = new Player('Connor','pass4');
+var rhegi = new Player('Rhegi','pass5');
+var evilKevin = new Player('Evil Kevin','traitor');
+
+
+playerDB = [mattB,mattT,kevin,connor,rhegi,evilKevin];
+gameDB = [game1,game2];
+
+game1.addPlayer(mattT);
+game1.addPlayer(kevin);
+game1.addPlayer(mattB);
+game1.addPlayer(rhegi);
+game1.addPlayer(connor);
+game2.addPlayer(evilKevin);
+game1.start();
+game2.start();
+console.log('Game 1 deck:',game1.deck);
+//console.log('Game 2 deck:',game2.deck);
+
+
+/*
+
+ console.log('Matt T');
+ showPlayPhaseCards(game1,mattT);
+ console.log('Kevin');
+ showPlayPhaseCards(game1,kevin);
+
+
+
+ console.log('Kevin plays ',kevin.hand[2],'...');
+
+ game1.placeCard(kevin,kevin.hand[2]);
+ kevin.drawFrom(game1.deck);
+
+ console.log('Matt T');
+ showPlayPhaseCards(game1,mattT);
+ console.log('Kevin');
+ showPlayPhaseCards(game1,kevin);
+ console.log('Matt B');
+ showPlayPhaseCards(game1,mattB);
+
+ console.log('These cards are actually in play:',game1.playArea);
+
+ game1.placeCard(mattB,mattB.hand[1]);
+ mattB.drawFrom(game1.deck);
+
+ console.log('These cards are actually in play:',game1.playArea);
+ var mattBCardsInPlay = new showPlayPhaseCards(game1,mattB);
+
+ console.log(mattBCardsInPlay.inPlay);
+
+ game1.placeCard(rhegi,rhegi.hand[3]);
+ */
+
+/*
+console.log(cardLog[mattB.hand[0].text]);
+console.log('Card log success y/n?');  */
 
 module.exports = gameObj;

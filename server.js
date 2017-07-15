@@ -1,20 +1,21 @@
 var express = require("express");
 var bodyParser = require("body-parser");
-var methodOverride = require("method-override");
+//var methodOverride = require("method-override");
 
-var port = 3000;
+var port = process.env.PORT || 3000;
 
 var app = express();
 
-// Serve static content for the app from the "public" directory in the application directory.
-
-app.use(express.static("public"));
-//app.use("public", express.static("/assets/css"));
+var gameObj = require('./controllers/game.js');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// Serve static content for the app from the "public" directory in the application directory.
+app.use(express.static("public"));
+
+
 // Override with POST having ?_method=DELETE
-app.use(methodOverride("_method"));
+//app.use(methodOverride("_method"));
 
 // Set Handlebars.
 var exphbs = require("express-handlebars");
@@ -23,30 +24,25 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // Import routes and give the server access to them.
-
-// Need to change catsController.js to cardController.js
-var routes = require("./controllers/cardsController.js");
+var routes = require("./controllers/gameController.js");
 
 app.use("/", routes);
 
-//app.listen(port);
-
-// from Matt
 
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 /*
- app.get('/', function(req, res){
- res.sendFile(__dirname + '/index.html');
- });*/
+app.get('/', function(req, res){
+    res.sendFile(__dirname + '/index.html');
+});*/
 
 io.on('connection', function(socket)
 {
     console.log('a user connected');
     socket.on('disconnect', function()
-    {
-        console.log('user disconnected');
-    });
+        {
+            console.log('user disconnected');
+        });
 });
 
 http.listen(3000, function(){
@@ -69,3 +65,13 @@ function refreshPages(game) {
     console.log('Page refresh?');
     //  Modify emit to only target players relevant to the original socket.
 }
+
+
+
+//
+//
+//
+
+
+
+// app.listen(port);

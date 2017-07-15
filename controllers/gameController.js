@@ -6,34 +6,48 @@ var bodyParser = require('body-parser');
 var router = express.Router();
 router.use(bodyParser.json());
 
+// From Main
+// USERINFO
+var userinfo = require("../models/userinfo.js");
 
-// Import the model (cat.js) to use its database functions.
+// Create all our routes and set up logic within those routes where required.
+
 var gameObj = require('./game.js');
 var pageloads = 0;
 
 router.get("/", function(req, res) {
+    userinfo.all(function(data) {
+        var hbsObject = {
+            userinfo: data
+        };
+        console.log(hbsObject);
+        res.render("home", hbsObject);
+    });
+});
 
-/*    if(req.query)
-    {
+router.post("/", function(req, res) {
+    userinfo.create([
+        "user_name", "user_password"
+    ], [
+        req.body.user_name, req.body.user_password
+    ], function() {
+        res.redirect("/");
+    });
+});
+// End from Main
 
-    }*/
-//    console.log(req.query,'query');
-//    console.log(req,'req');
-//    console.log(res,'res');
+router.get("/login", function(req, res) {
 
     var public = [{
-        text: '???'
+        text: ''
     }];
 
     var mine = [{
-        text: 'WHARRGARBL!!!'
-    },
-        {
-            text: 'um ok'
-        }];
-
-//        console.log(req.params);
-        res.render("index1", {public: public, mine: mine});
+        text: ''
+    }
+    ];
+        //
+        res.render("login", {public: public, mine: mine});
     //  });
 });
 
@@ -44,19 +58,16 @@ router.get("/login", function(req, res) {
 //    console.log(req.query);
 
     var public = [{
-        text: '???'
+        text: ''
     }];
 
     var mine = [{
-        text: 'WHARRGARBL!!!',
-        playable:true
-    },
-        {
-          text: 'um ok',
-            playable:false
-        }];
+        text: '',
+        playable:false
+    }
+    ];
 
-    res.render("index1", {public: public, mine: mine});
+    res.render("login", {public: public, mine: mine});
 
     //  });
 });
@@ -68,6 +79,8 @@ router.get("/login", function(req, res) {
 //    post
     var playerToken = req.body;
 
+    console.log(playerToken.card,'Hey look at this card!!!!');
+    console.log(playerToken);
 // get
 //  console.log(req.query,'query');
 //     var player = req.query;
@@ -78,17 +91,27 @@ router.get("/login", function(req, res) {
 
     var game = finder.game;
     var player = finder.player;
+    var cardShower = '';
 
+    console.log(game.judge);
+    console.log('Turn state:',game.turnState);
 
  //    var cardShower = new gameObj.showPlayPhaseCards(game,player,true);
-     var cardShower = new gameObj.showPlayPhaseCards(game,player);
+    if (game.turnState === 'play')
+    {console.log('play phase');
+        cardShower = new gameObj.showPlayPhaseCards(game,player);}
+    else if (game.turnState === 'judge')
+    {console.log('judge phase');
+        cardShower = new gameObj.showJudgePhaseCards(game,player);}
 
+    console.log('Still judge/play phase');
 
     var public = cardShower.inPlay;
     var mine = cardShower.inHand;
     var adj = cardShower.adj;
+     var scores = cardShower.scores;
 
-//    var names = cardShower.players;
+     //    var names = cardShower.players;
 
  /*   var public = gameObj.showPlayPhaseCards(game,player,true).inPlay;
     var mine = gameObj.showPlayPhaseCards(game,player,true).inHand;*/
@@ -104,7 +127,33 @@ router.get("/login", function(req, res) {
 //    gameObj.done(player.game);
     gameObj.done(playerToken);
 
-    return res.render("index2", {player:player, public:public, mine:mine, pageloads:pageloads, adj:adj} ,function(err, html){
+        console.log(playerToken.card,playerToken.name,playerToken.game);
+        console.log(playerToken.card,playerToken.name,playerToken.game);
+        console.log(playerToken.card,playerToken.name,playerToken.game);
+        console.log(playerToken.card,playerToken.name,playerToken.game);
+
+     var cardRef = '';
+     cardRef = gameObj.findPlayerCard(playerToken.card,playerToken.name,playerToken.game);
+
+     console.log('game.turnState:',game.turnState,'playerToken.card',playerToken.card,'game[game.judge]',game.players[game.judge]);
+
+
+    if(game.turnState === 'play' && cardRef != '' && player.canPlay)
+     {
+         console.log(cardRef);
+         console.log(cardRef);
+         game.placeCard(player,cardRef.card);
+//         game.placeCard(cardRef.player, cardRef.card);
+     }
+
+     else if (game.turnState === 'judge' && playerToken.card != '' && game.players[game.judge] === player)
+    {
+        gameObj.likeThisCard(playerToken.card);
+        console.log('Did this happen?');
+    }
+
+
+    return res.render("index2", {player:player, public:public, mine:mine, pageloads:pageloads, adj:adj, scores: scores} ,function(err, html){
         if (err) {
             console.log("ERR", err);
 
