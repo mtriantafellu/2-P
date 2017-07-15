@@ -61,9 +61,7 @@ router.get("/login", function(req, res) {
         text: ''
     }
     ];
-        //
         res.render("login", {public: public, mine: mine});
-    //  });
 });
 
 
@@ -88,21 +86,17 @@ router.get("/login", function(req, res) {
 });
 
 
-// router.get("/game", function(req, res) {
- router.post("/game", function(req, res) {
+router.post("/game", function(req, res) {
 
 //    post
     var playerToken = req.body;
 
-    console.log(playerToken.card,'Hey look at this card!!!!');
-    console.log(playerToken);
-// get
-//  console.log(req.query,'query');
-//     var player = req.query;
+//    console.log(playerToken.card,'Hey look at this card!!!!');
+//    console.log(playerToken);
 
-    pageloads++;
+//    pageloads++;
 
-     var finder = new gameObj.getGamePlayer(playerToken.game,playerToken.name);
+    var finder = new gameObj.getGamePlayer(playerToken.game,playerToken.name);
 
     var game = finder.game;
     var player = finder.player;
@@ -111,25 +105,26 @@ router.get("/login", function(req, res) {
     console.log(game.judge);
     console.log('Turn state:',game.turnState);
 
- //    var cardShower = new gameObj.showPlayPhaseCards(game,player,true);
+    //    var cardShower = new gameObj.showPlayPhaseCards(game,player,true);
     if (game.turnState === 'play')
     {console.log('play phase');
         cardShower = new gameObj.showPlayPhaseCards(game,player);}
     else if (game.turnState === 'judge')
     {console.log('judge phase');
         cardShower = new gameObj.showJudgePhaseCards(game,player);}
+    else {console.log('Unable to process game state...');}
 
-    console.log('Still judge/play phase');
+//    console.log('Still judge/play phase');
 
     var public = cardShower.inPlay;
     var mine = cardShower.inHand;
     var adj = cardShower.adj;
-     var scores = cardShower.scores;
+    var scores = cardShower.scores;
 
-     //    var names = cardShower.players;
+    //    var names = cardShower.players;
 
- /*   var public = gameObj.showPlayPhaseCards(game,player,true).inPlay;
-    var mine = gameObj.showPlayPhaseCards(game,player,true).inHand;*/
+    /*   var public = gameObj.showPlayPhaseCards(game,player,true).inPlay;
+     var mine = gameObj.showPlayPhaseCards(game,player,true).inHand;*/
 
 //    var public = getGamePlayer(playerToken);
 
@@ -142,31 +137,38 @@ router.get("/login", function(req, res) {
 //    gameObj.done(player.game);
     gameObj.done(playerToken);
 
-        console.log(playerToken.card,playerToken.name,playerToken.game);
-        console.log(playerToken.card,playerToken.name,playerToken.game);
-        console.log(playerToken.card,playerToken.name,playerToken.game);
-        console.log(playerToken.card,playerToken.name,playerToken.game);
+    console.log(playerToken.card,playerToken.name,playerToken.game);
+    console.log(playerToken.card,playerToken.name,playerToken.game);
+    console.log(playerToken.card,playerToken.name,playerToken.game);
+    console.log(playerToken.card,playerToken.name,playerToken.game);
 
-     var cardRef = '';
-     cardRef = gameObj.findPlayerCard(playerToken.card,playerToken.name,playerToken.game);
+    var cardRef = '';
+    cardRef = gameObj.findPlayerCard(playerToken.card,playerToken.name,playerToken.game);
 
-     console.log('game.turnState:',game.turnState,'playerToken.card',playerToken.card,'game[game.judge]',game.players[game.judge]);
+    console.log('game.turnState:',game.turnState,'playerToken.card',playerToken.card,'game[game.judge]',game.players[game.judge]);
 
 
     if(game.turnState === 'play' && cardRef != '' && player.canPlay)
-     {
-         console.log(cardRef);
-         console.log(cardRef);
-         game.placeCard(player,cardRef.card);
+    {
+        console.log(cardRef);
+        console.log(cardRef);
+        game.placeCard(player,cardRef.card);
 //         game.placeCard(cardRef.player, cardRef.card);
-     }
+    }
 
-     else if (game.turnState === 'judge' && playerToken.card != '' && game.players[game.judge] === player)
+    else if (game.turnState === 'judge' && playerToken.card != '' && game.players[game.judge] === player)
     {
         gameObj.likeThisCard(playerToken.card);
         console.log('Did this happen?');
     }
 
+    console.log(adj);
+    console.log(adj);
+    console.log(adj);
+    console.log(adj);
+    console.log(adj);
+    console.log(adj);
+    console.log(adj);
 
     return res.render("index2", {player:player, public:public, mine:mine, pageloads:pageloads, adj:adj, scores: scores} ,function(err, html){
         if (err) {
@@ -178,7 +180,7 @@ router.get("/login", function(req, res) {
 
 //        console.log(html);
         // Return the HTML of the View
-       return res.send(html);
+        return res.send(html);
     });
 
 });
