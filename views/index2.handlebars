@@ -34,23 +34,31 @@
         <img src=""
         <ul>
             <div class="col-sm-2">
-
                 <li>
 
+                <h3>Card state: {{this.type}}</h3>
+                    <h3>{{this.text}}</h3>
+                    <strong>Description:</strong>{{this.desc}}
+                    {{#if this.playable}}
+                        {{> cards/play-card}}
+                    {{/if}}
+                    {{#unless this.playable}}
+                        {{> cards/look-card}}
+                    {{/unless}}
+
                 {{#if this.faceUp}}
-                    (Face up logic works)
+                    <!-- (Face up logic works) -->
                     <span><img src="assets/images/cards/applefront.jpg" height="125" width="75"><span id="textarea2"></span>
                 {{/if}}
 
                 {{#if this.faceDown}}
-                    (Face down logic works)
-                    <img src="assets/images/cards/card_back.jpg" height="125" width="75"><span id="textarea3"></span>
+                    <!--(Face down logic works) -->
+                    <span><img src="assets/images/cards/card_back.jpg" height="125" width="75"><span id="textarea3"></span>
                 {{/if}}
 
                 {{#if this.judge}}
                     <h4>Judge: {{this.playerName}}</h4>
                     <span><img src="assets/images/gavel.jpg" height="125" width="75"><span id="textarea4"></span>
-
                 {{/if}}
 
                 {{#if this.empty}}
@@ -63,16 +71,6 @@
                     <span><img src="/assets/images/jaqen.png" height="115" width="85"><span>
                 {{/if}}
 
-                <h3>Card state: {{this.type}}</h3>
-                <h3>{{this.text}}</h3>
-                    <strong>Description:</strong>
-                    {{this.desc}}
-                    {{#if this.playable}}
-                    {{> cards/play-card}}
-                    {{/if}}
-                    {{#unless this.playable}}
-                    {{> cards/look-card}}
-                    {{/unless}}
                 </li>
             </div>
         </ul>
@@ -105,12 +103,11 @@
                             {{this.desc}}
                             {{#if this.playable}}
                                 {{> cards/play-card}}
-                                <img src="assets/images/cards/card_back.jpg" height="125" width="75"><span id="textarea8"></span>
+                                <span><img src="assets/images/cards/card_back.jpg" height="125" width="75"><span id="textarea8"></span>
                             {{/if}}
                             {{#unless this.playable}}
                                 {{> cards/look-card}}
-
-                                <img src="assets/images/cards/applefront.jpg" height="125" width="75"><span id="textarea7"></span>
+                                <span><img src="assets/images/cards/applefront.jpg" height="125" width="75"><span id="textarea7"></span>
                             {{/unless}}
                         </li>
             </ul>
@@ -159,13 +156,25 @@
                             {{/each}}
                         </div>
 
+                       <a class="btn btn-primary btn-lg center-block" href="/profile" role="Log in">See Profile</a>
+
                 </div><!--class="panel panel-success"-->
             </div><!--class="col-md-12"-->
         </div><!--class="row"-->
     </div><!--class="col-md-3"-->
 </div><!--class="row"-->
 
-    </div><!--class="container"-->
+<div class="row">
+    <div class="panel panel-success panel-cards">
+        <div class="panel-heading" id="pHeadings">
+            <h3 class="panel-title" id="cardArea">Previous Turns</h3>
+        </div>
+
+    </div><!--class="panel panel-success panel-cards"-->
+
+</div><!--class="row"-->
+
+</div><!--class="container"-->
 
     </body>
 </html>
